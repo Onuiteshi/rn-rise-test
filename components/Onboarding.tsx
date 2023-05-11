@@ -193,7 +193,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 90,
-
     flexGrow: 1,
     width: windowWidth,
   },

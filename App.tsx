@@ -1,10 +1,10 @@
-import { useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
-import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Onboarding from "./components/Onboarding";
+import SignUpScreen from "./screens/auth/Signup";
+import SignInScreen from "./screens/auth/Signin";
 
 export default function App() {
   const handleNext = () => {
@@ -16,24 +16,13 @@ export default function App() {
     // Logic to handle "Back" button press
     console.log("Back button pressed");
   };
-  // const [fontsLoaded] = useFonts({
-  //   "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
-  // });
-
-  // const onLayoutRootView = useCallback(async () => {
-  //   if (fontsLoaded) {
-  //     await SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
-
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
 
   return (
     // <GestureHandlerRootView>
     <View style={styles.container}>
-      <Onboarding onNext={handleNext} onBack={handleBack} />
+      {/* <SignUpScreen /> */}
+      {/* <Onboarding onNext={handleNext} onBack={handleBack} /> */}
+      <SignInScreen />
       <StatusBar style="auto" />
     </View>
     // </GestureHandlerRootView>

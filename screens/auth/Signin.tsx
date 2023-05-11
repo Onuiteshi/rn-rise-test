@@ -13,34 +13,36 @@ import {
 import { IconButton } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-// import { yupResolver } from "@hookform/resolvers/yup";
-// import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 type SignUpFormData = {
   email: string;
   password: string;
 };
 
-// const schema = yup.object().shape({
-//   email: yup
-//     .string()
-//     .required("Email is required")
-//     .email("Invalid email format"),
-//   password: yup
-//     .string()
-//     .required("Password is required")
-//     .min(8, "Minimum of 8 characters required")
-//     .matches(/[A-Z]/, "One UPPERCASE character required")
-//     .matches(/[\W_]/, "One unique character required"),
-// });
+const schema = yup.object().shape({
+  email: yup
+    .string()
+    .required("Email is required")
+    .email("Invalid email format"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Minimum of 8 characters required")
+    .matches(/[A-Z]/, "One UPPERCASE character required")
+    .matches(/[\W_]/, "One unique character required"),
+});
 
-const SignUpScreen: React.FC = () => {
+const SignInScreen: React.FC = () => {
   const {
     control,
     watch,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpFormData>();
+  } = useForm<SignUpFormData>({
+    resolver: yupResolver(schema),
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState("");
 
@@ -71,32 +73,6 @@ const SignUpScreen: React.FC = () => {
     setShowPassword(!showPassword);
   };
 
-  const minLengthRegex = /.{8,}/;
-  const uppercaseRegex = /^(?=.*[A-Z]).+$/;
-  const uniqueRegex = /^(?=.*[!@#$%^&*?]).+$/;
-
-  const isPasswordValid = () => {
-    const minLengthRegex = /.{8,}/;
-    const uppercaseRegex = /^(?=.*[A-Z]).+$/;
-    const uniqueRegex = /^(?=.*[!@#$%^&*?]).+$/;
-
-    return (
-      minLengthRegex.test(password) &&
-      uppercaseRegex.test(password) &&
-      uniqueRegex.test(password)
-    );
-  };
-
-  const isMinLengthRegexValid = () => {
-    return minLengthRegex.test(password);
-  };
-  const isUppercaseRegexValid = () => {
-    return uppercaseRegex.test(password);
-  };
-  const isUniqueRegexValid = () => {
-    return uniqueRegex.test(password);
-  };
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
@@ -105,9 +81,10 @@ const SignUpScreen: React.FC = () => {
         keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
       >
         {/* <View style={styles.container}> */}
-        <Text style={styles.heading}>Create an account</Text>
+        <Text style={styles.heading}>Welcome Back</Text>
         <Text style={styles.subheading}>
-          Start building your dollar-denominated investment portfolio
+          Let’s get you logged in to get back to building your
+          dollar-denominated investment portfolio.
         </Text>
 
         <View style={styles.inputContainer}>
@@ -201,6 +178,14 @@ const SignUpScreen: React.FC = () => {
             name="password"
             rules={{
               required: "Password is required",
+              validate: {
+                minLength: (value) =>
+                  value.length >= 8 || "Minimum of 8 characters required",
+                uppercase: (value) =>
+                  /[A-Z]/.test(value) || "One UPPERCASE character required",
+                unique: (value) =>
+                  /[\W_]/.test(value) || "One unique character required",
+              },
             }}
             defaultValue=""
           />
@@ -216,57 +201,27 @@ const SignUpScreen: React.FC = () => {
           />
         </View>
 
-        <View style={{ marginBottom: 19, marginTop: 3 }}>
-          <View style={styles.indicatorContainer}>
-            <MaterialCommunityIcons
-              name={
-                isMinLengthRegexValid()
-                  ? "checkbox-marked-circle"
-                  : "checkbox-blank-circle-outline"
-              }
-              size={16}
-              color={isMinLengthRegexValid() ? "#0898A0" : "#cccccc"}
-            />
-            <Text style={styles.indicatorText}>Minimum of 8 characters</Text>
-          </View>
-
-          <View style={styles.indicatorContainer}>
-            <MaterialCommunityIcons
-              name={
-                isUppercaseRegexValid()
-                  ? "checkbox-marked-circle"
-                  : "checkbox-blank-circle-outline"
-              }
-              size={16}
-              color={isUppercaseRegexValid() ? "#0898A0" : "#cccccc"}
-            />
-            <Text style={styles.indicatorText}>One UPPERCASE character</Text>
-          </View>
-
-          <View style={styles.indicatorContainer}>
-            <MaterialCommunityIcons
-              name={
-                isUniqueRegexValid()
-                  ? "checkbox-marked-circle"
-                  : "checkbox-blank-circle-outline"
-              }
-              size={16}
-              color={isUniqueRegexValid() ? "#0898A0" : "#cccccc"}
-            />
-            <Text style={styles.indicatorText}>
-              One unique character (e.g: !@#$%^&*?)
-            </Text>
-          </View>
-        </View>
-
         <TouchableOpacity
-          style={[styles.button, { opacity: isPasswordValid() ? 1 : 0.5 }]}
+          style={[styles.button]}
           onPress={handleSubmit(onSubmit)}
-          disabled={!isPasswordValid()}
         >
-          <Text style={styles.buttonText}>Sign Up</Text>
+          <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
+
         <View
+          style={{
+            marginTop: 30,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <TouchableOpacity>
+            <Text style={{ fontSize: 15, fontWeight: "700", color: "#0898A0" }}>
+              I forgot my password
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {/* <View
           style={{
             marginTop: 30,
             flexDirection: "row",
@@ -279,11 +234,10 @@ const SignUpScreen: React.FC = () => {
           </Text>
           <TouchableOpacity style={{ marginLeft: 5 }}>
             <Text style={{ fontSize: 15, fontWeight: "700", color: "#0898A0" }}>
-              Sign In
+              I forgot my password
             </Text>
           </TouchableOpacity>
-        </View>
-        {/* </View> */}
+        </View> */}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -339,16 +293,6 @@ const styles = StyleSheet.create({
     right: -5,
     top: 0,
   },
-  indicatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  indicatorText: {
-    marginLeft: 10,
-    fontSize: 13,
-    fontWeight: "400",
-  },
   button: {
     backgroundColor: "#0898A0",
     paddingVertical: 12,
@@ -365,4 +309,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpScreen;
+export default SignInScreen;
