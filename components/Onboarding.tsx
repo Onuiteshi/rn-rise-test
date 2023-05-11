@@ -12,12 +12,7 @@ import {
 import { Feather } from "@expo/vector-icons";
 import { Swipeable } from "react-native-gesture-handler";
 
-type ScreenProps = {
-  onNext: () => void;
-  onBack: () => void;
-};
-
-const Onboarding: React.FC<ScreenProps> = ({ onNext, onBack }) => {
+const Onboarding: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [images] = useState([
@@ -39,12 +34,10 @@ const Onboarding: React.FC<ScreenProps> = ({ onNext, onBack }) => {
   const [colors] = useState(["#FE7122", "#B80074", "#0898A0"]);
 
   const handleNext = () => {
-    onNext();
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
   const handleBack = () => {
-    onBack();
     setCurrentIndex(
       (prevIndex) => (prevIndex - 1 + images.length) % images.length
     );
