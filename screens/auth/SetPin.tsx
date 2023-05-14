@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 100,
     paddingHorizontal: 17,
+    backgroundColor: "#fff",
   },
   heading: {
     fontSize: 25,

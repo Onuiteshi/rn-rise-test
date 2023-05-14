@@ -2,13 +2,18 @@ import React, { useState } from "react";
 import { View } from "react-native";
 import SignUp from "../../components/Signup";
 import About from "../../components/About";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 type SignUpFormData = {
   email: string;
   password: string;
 };
 
-const SignUpScreen: React.FC = () => {
+type Props = {
+  navigation: NavigationProp<ParamListBase>;
+};
+
+const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   const [emailPasswordData, setEmailPasswordData] =
     useState<SignUpFormData | null>(null);
 
@@ -26,9 +31,17 @@ const SignUpScreen: React.FC = () => {
   const renderForm = () => {
     switch (step) {
       case 1:
-        return <SignUp next={handleEmailPasswordSubmit} />;
+        return (
+          <SignUp next={handleEmailPasswordSubmit} navigation={navigation} />
+        );
       case 2:
-        return <About signUpData={emailPasswordData} prev={prevStep} />;
+        return (
+          <About
+            signUpData={emailPasswordData}
+            prev={prevStep}
+            navigation={navigation}
+          />
+        );
 
       default:
         <View></View>;

@@ -17,7 +17,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DatePicker from "react-native-datepicker";
 // import DatePicker from "@react-native-community/datetimepicker"
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { log } from "react-native-reanimated";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { fetchUser, signup, User } from "../store";
 
 type AboutFormData = {
   first_name: string;
@@ -35,9 +37,10 @@ type SignUpFormData = {
 type ScreenProps = {
   prev: () => void;
   signUpData: SignUpFormData | null;
+  navigation: NavigationProp<ParamListBase>;
 };
 
-const About: React.FC<ScreenProps> = ({ prev, signUpData }) => {
+const About: React.FC<ScreenProps> = ({ prev, signUpData, navigation }) => {
   const {
     control,
     watch,
@@ -48,12 +51,6 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData }) => {
 
   const [focusedInput, setFocusedInput] = useState("");
   const [selectedDate, setSelectedDate] = useState<string>("");
-
-  //   const handleDateChange = (date: string) => {
-  //     setValue("date_of_birth", date);
-  //     setSelectedDate(date);
-  //     handleFocus("date_of_birth");
-  //   };
 
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
@@ -68,13 +65,25 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData }) => {
     };
   }, []);
 
+  const dispatch: any = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, []);
+
   const handleFocus = (inputName: string) => {
     setFocusedInput(inputName);
   };
 
   const onSubmit = (data: AboutFormData) => {
-    console.log(data);
-    console.log("data1", signUpData);
+    let signupFormData: User = {
+      first_name: data?.first_name,
+      last_name: data?.last_name,
+      email_address: signUpData?.email,
+      password: signUpData?.password,
+      date_of_birth: data?.date_of_birth,
+    };
+    dispatch(signup(signupFormData));
   };
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -82,7 +91,6 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData }) => {
     setShowDatePicker(false);
     setSelectedDate(date);
     setValue("date_of_birth", date);
-
     handleFocus("date_of_birth");
   };
 
@@ -428,6 +436,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 90,
     paddingHorizontal: 17,
+    backgroundColor: "#fff",
   },
   heading: {
     fontSize: 25,

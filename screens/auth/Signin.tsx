@@ -15,6 +15,11 @@ import { useForm, Controller } from "react-hook-form";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
+
+type Props = {
+  navigation: NavigationProp<ParamListBase>;
+};
 
 type SignUpFormData = {
   email: string;
@@ -34,7 +39,7 @@ const schema = yup.object().shape({
     .matches(/[\W_]/, "One unique character required"),
 });
 
-const SignInScreen: React.FC = () => {
+const SignInScreen: React.FC<Props> = ({ navigation }) => {
   const {
     control,
     watch,
@@ -80,164 +85,173 @@ const SignInScreen: React.FC = () => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}
       >
-        {/* <View style={styles.container}> */}
-        <Text style={styles.heading}>Welcome Back</Text>
-        <Text style={styles.subheading}>
-          Let’s get you logged in to get back to building your
-          dollar-denominated investment portfolio.
-        </Text>
+        <View>
+          <Text style={styles.heading}>Welcome Back</Text>
+          <Text style={styles.subheading}>
+            Let’s get you logged in to get back to building your
+            dollar-denominated investment portfolio.
+          </Text>
 
-        <View style={styles.inputContainer}>
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      borderColor: errors.email
-                        ? "red"
-                        : focusedInput === "email"
-                        ? "#0898A0"
-                        : "#E1E8ED",
-                    },
-                  ]}
-                  placeholder={focusedInput === "email" ? "" : "Email address"}
-                  placeholderTextColor="#999"
-                  onBlur={onBlur}
-                  onFocus={() => handleFocus("email")}
-                  onChangeText={onChange}
-                  value={value}
-                  autoCapitalize="none"
-                />
-                {focusedInput === "email" || value ? (
-                  <Text
+          <View style={styles.inputContainer}>
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View>
+                  <TextInput
                     style={[
-                      styles.floatingInput,
-                      { color: errors.email ? "red" : "#0898A0" },
+                      styles.input,
+                      {
+                        borderColor: errors.email
+                          ? "red"
+                          : focusedInput === "email"
+                          ? "#0898A0"
+                          : "#E1E8ED",
+                      },
                     ]}
-                  >
-                    Email address
-                  </Text>
-                ) : null}
-              </View>
+                    placeholder={
+                      focusedInput === "email" ? "" : "Email address"
+                    }
+                    placeholderTextColor="#999"
+                    onBlur={onBlur}
+                    onFocus={() => handleFocus("email")}
+                    onChangeText={onChange}
+                    value={value}
+                    autoCapitalize="none"
+                  />
+                  {focusedInput === "email" || value ? (
+                    <Text
+                      style={[
+                        styles.floatingInput,
+                        { color: errors.email ? "red" : "#0898A0" },
+                      ]}
+                    >
+                      Email address
+                    </Text>
+                  ) : null}
+                </View>
+              )}
+              name="email"
+              rules={{
+                required: "Email address is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Invalid email address",
+                },
+              }}
+              defaultValue=""
+            />
+            {errors.email && (
+              <Text style={styles.error}>{errors.email.message}</Text>
             )}
-            name="email"
-            rules={{
-              required: "Email address is required",
-              pattern: {
-                value: /^\S+@\S+$/i,
-                message: "Invalid email address",
-              },
-            }}
-            defaultValue=""
-          />
-          {errors.email && (
-            <Text style={styles.error}>{errors.email.message}</Text>
-          )}
-        </View>
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      borderColor: errors.password
-                        ? "red"
-                        : focusedInput === "password"
-                        ? "#0898A0"
-                        : "#E1E8ED",
-                    },
-                  ]}
-                  placeholder={focusedInput === "password" ? "" : "Password"}
-                  placeholderTextColor="#999"
-                  secureTextEntry={!showPassword}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  autoCapitalize="none"
-                  onFocus={() => handleFocus("password")}
-                />
-                {focusedInput === "password" || value ? (
-                  <Text
+          <View style={styles.inputContainer}>
+            <Controller
+              control={control}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View>
+                  <TextInput
                     style={[
-                      styles.floatingInput,
-                      { color: errors.password ? "red" : "#0898A0" },
+                      styles.input,
+                      {
+                        borderColor: errors.password
+                          ? "red"
+                          : focusedInput === "password"
+                          ? "#0898A0"
+                          : "#E1E8ED",
+                      },
                     ]}
-                  >
-                    Password
-                  </Text>
-                ) : null}
-              </View>
+                    placeholder={focusedInput === "password" ? "" : "Password"}
+                    placeholderTextColor="#999"
+                    secureTextEntry={!showPassword}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                    autoCapitalize="none"
+                    onFocus={() => handleFocus("password")}
+                  />
+                  {focusedInput === "password" || value ? (
+                    <Text
+                      style={[
+                        styles.floatingInput,
+                        { color: errors.password ? "red" : "#0898A0" },
+                      ]}
+                    >
+                      Password
+                    </Text>
+                  ) : null}
+                </View>
+              )}
+              name="password"
+              rules={{
+                required: "Password is required",
+                validate: {
+                  minLength: (value) =>
+                    value.length >= 8 || "Minimum of 8 characters required",
+                  uppercase: (value) =>
+                    /[A-Z]/.test(value) || "One UPPERCASE character required",
+                  unique: (value) =>
+                    /[\W_]/.test(value) || "One unique character required",
+                },
+              }}
+              defaultValue=""
+            />
+            {errors.password && (
+              <Text style={styles.error}>{errors.password.message}</Text>
             )}
-            name="password"
-            rules={{
-              required: "Password is required",
-              validate: {
-                minLength: (value) =>
-                  value.length >= 8 || "Minimum of 8 characters required",
-                uppercase: (value) =>
-                  /[A-Z]/.test(value) || "One UPPERCASE character required",
-                unique: (value) =>
-                  /[\W_]/.test(value) || "One unique character required",
-              },
-            }}
-            defaultValue=""
-          />
-          {errors.password && (
-            <Text style={styles.error}>{errors.password.message}</Text>
-          )}
-          <IconButton
-            icon={showPassword ? "eye-off" : "eye"}
-            size={20}
-            iconColor="#0898A0"
-            onPress={togglePasswordVisibility}
-            style={styles.eyeIcon}
-          />
-        </View>
+            <IconButton
+              icon={showPassword ? "eye-off" : "eye"}
+              size={20}
+              iconColor="#0898A0"
+              onPress={togglePasswordVisibility}
+              style={styles.eyeIcon}
+            />
+          </View>
 
-        <TouchableOpacity
-          style={[styles.button]}
-          onPress={handleSubmit(onSubmit)}
-        >
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.button]}
+            onPress={handleSubmit(onSubmit)}
+          >
+            <Text style={styles.buttonText}>Sign In</Text>
+          </TouchableOpacity>
+
+          <View
+            style={{
+              marginTop: 30,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <TouchableOpacity>
+              <Text
+                style={{ fontSize: 15, fontWeight: "700", color: "#0898A0" }}
+              >
+                I forgot my password
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View
           style={{
-            marginTop: 30,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <TouchableOpacity>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: "#0898A0" }}>
-              I forgot my password
-            </Text>
-          </TouchableOpacity>
-        </View>
-        {/* <View
-          style={{
-            marginTop: 30,
+            marginBottom: 40,
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
           <Text style={{ fontSize: 15, fontWeight: "700", color: "#71879C" }}>
-            Have an account?
+            Don't have an account?
           </Text>
-          <TouchableOpacity style={{ marginLeft: 5 }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Signup")}
+            style={{ marginLeft: 5 }}
+          >
             <Text style={{ fontSize: 15, fontWeight: "700", color: "#0898A0" }}>
-              I forgot my password
+              Sign up
             </Text>
           </TouchableOpacity>
-        </View> */}
+        </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -248,6 +262,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 100,
     paddingHorizontal: 17,
+    backgroundColor: "#fff",
+    justifyContent: "space-between",
   },
   heading: {
     fontSize: 25,

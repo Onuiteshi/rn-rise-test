@@ -11,8 +11,13 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { Swipeable } from "react-native-gesture-handler";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const Onboarding: React.FC = () => {
+type Props = {
+  navigation: NavigationProp<ParamListBase>;
+};
+
+const Onboarding: React.FC<Props> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [images] = useState([
@@ -157,7 +162,7 @@ const Onboarding: React.FC = () => {
         <View style={styles.finalButtonsContainer}>
           <TouchableOpacity
             style={[styles.signupButton, { backgroundColor: "#0898A0" }]}
-            onPress={() => {}}
+            onPress={() => navigation.navigate("Signup")}
           >
             <Text style={styles.signupButtonText}>Signup</Text>
           </TouchableOpacity>
@@ -166,7 +171,7 @@ const Onboarding: React.FC = () => {
               styles.signinButton,
               { backgroundColor: "rgba(113, 135, 156, 0.1)" },
             ]}
-            onPress={() => {}}
+            onPress={() => navigation.navigate("Signin")}
           >
             <Text style={styles.signinButtonText}>Sign in</Text>
           </TouchableOpacity>

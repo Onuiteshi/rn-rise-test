@@ -13,19 +13,19 @@ import {
 import { IconButton } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-// import { yupResolver } from "@hookform/resolvers/yup";
-// import * as yup from "yup";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
 type SignUpFormData = {
   email: string;
   password: string;
 };
 
-type ScreenProps = {
+type Props = {
+  navigation: NavigationProp<ParamListBase>;
   next: (data: SignUpFormData) => void;
 };
 
-const SignUp: React.FC<ScreenProps> = ({ next }) => {
+const SignUp: React.FC<Props> = ({ navigation, next }) => {
   const {
     control,
     watch,
@@ -52,9 +52,12 @@ const SignUp: React.FC<ScreenProps> = ({ next }) => {
     setFocusedInput(inputName);
   };
 
+  const handleSignin = () => {
+    navigation.navigate("Signin");
+  };
+
   const onSubmit = (data: SignUpFormData) => {
     next(data);
-    console.log(data);
   };
 
   const password = watch("password");
@@ -259,6 +262,7 @@ const SignUp: React.FC<ScreenProps> = ({ next }) => {
         >
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
+
         <View
           style={{
             marginTop: 30,
@@ -270,7 +274,7 @@ const SignUp: React.FC<ScreenProps> = ({ next }) => {
           <Text style={{ fontSize: 15, fontWeight: "700", color: "#71879C" }}>
             Have an account?
           </Text>
-          <TouchableOpacity style={{ marginLeft: 5 }}>
+          <TouchableOpacity onPress={handleSignin} style={{ marginLeft: 5 }}>
             <Text style={{ fontSize: 15, fontWeight: "700", color: "#0898A0" }}>
               Sign In
             </Text>
@@ -287,6 +291,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 100,
     paddingHorizontal: 17,
+    backgroundColor: "#fff",
   },
   heading: {
     fontSize: 25,
