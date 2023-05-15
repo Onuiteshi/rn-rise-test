@@ -4,17 +4,19 @@ import axios from "axios";
 export interface User {
   first_name: string;
   last_name: string;
-  date_of_birth: string | undefined;
+  date_of_birth: Date;
   email_address: string | undefined;
   password: string | undefined;
 }
 
 interface UserState {
   user: User | null;
+  token: String;
 }
 
 const initialState: UserState = {
   user: null,
+  token: "",
 };
 
 const userSlice = createSlice({
@@ -31,31 +33,57 @@ const userSlice = createSlice({
 });
 
 export const signup = (data: User) => async (dispatch: any) => {
-  try {
-    const response = await axios.post(
-      "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/users",
-      data
-    );
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+  fetch(
+    "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/users",
+    requestOptions
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.status === 201) {
+        const userData = data.data;
+        dispatch(setUser(userData));
+      }
+    });
+};
 
-    console.warn(response);
+export const signin = (data: User) => async (dispatch: any) => {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
+  fetch(
+    "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/sessions",
+    requestOptions
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
 
-    if (response.status === 201) {
-      const userData = response.data;
-      dispatch(setUser(userData));
-    }
-  } catch (error) {
-    console.error("Signup failed:", error);
-  }
+      if (data.status === 200) {
+        const userData = data.data;
+        dispatch(setUser(userData));
+      }
+    });
 };
 
 export const fetchUser = () => async (dispatch: any) => {
   try {
-    const response = await fetch("https://api.example.com/user", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/sessions",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response);
 
     if (response.ok) {
       const userData = await response.json();

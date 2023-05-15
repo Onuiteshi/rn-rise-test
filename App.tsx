@@ -4,8 +4,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NavigationContainer } from "@react-navigation/native";
 import { Provider, useDispatch } from "react-redux";
 import { fetchUser, store } from "./store";
-import AuthStackNavigator from "./navigation/AuthStacknavigator";
+// import AuthStackNavigator from "./navigation/AuthStacknavigator";
 import { useEffect } from "react";
+import MainStackNavigator from "./navigation/MainStackNavigator";
 
 export default function App() {
   return (
@@ -14,7 +15,8 @@ export default function App() {
         {/* <GestureHandlerRootView> */}
 
         <View style={styles.container}>
-          <AuthStackNavigator />
+          {/* <AuthStackNavigator /> */}
+          <MainStackNavigator />
           <StatusBar style="auto" />
         </View>
 

@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   indicator: {
     width: 7,
     height: 7,
-    borderRadius: 7 / 3,
+    borderRadius: 7 / 2,
     backgroundColor: "#ccc",
     marginHorizontal: 4,
   },
