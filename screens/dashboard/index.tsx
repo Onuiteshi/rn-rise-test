@@ -17,7 +17,7 @@ import {
 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
-const Home: React.FC = () => {
+const Index: React.FC = () => {
   const [greeting, setGreeting] = useState("");
   const [isMorning, setIsMorning] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -471,4 +471,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Index;

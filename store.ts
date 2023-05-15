@@ -1,5 +1,4 @@
 import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 
 export interface User {
   first_name: string;

@@ -2,8 +2,8 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import Home from "../screens/dashboard/Home";
 import { View } from "react-native";
+import Index from "../screens/dashboard";
 
 // Create a bottom tab navigator
 const Tab = createBottomTabNavigator();
@@ -36,7 +36,7 @@ const MainStackNavigator: React.FC = () => {
     >
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={Index}
         options={{
           tabBarIcon: ({ focused }) => (
             <>
