@@ -10,6 +10,7 @@ import {
   TextInput,
   Keyboard,
   Platform,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Modal from "react-native-modal";
@@ -740,7 +741,7 @@ const Modals = ({
         );
       case 5:
         return (
-          <View
+          <ScrollView
             style={{
               backgroundColor: "white",
               borderRadius: 8,
@@ -903,7 +904,8 @@ const Modals = ({
                 Start Over
               </Text>
             </TouchableOpacity>
-          </View>
+            <View style={styles.bottomSpace} />
+          </ScrollView>
         );
       case 6:
         return (
@@ -1039,5 +1041,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",
+  },
+  bottomSpace: {
+    height: 30,
   },
 });

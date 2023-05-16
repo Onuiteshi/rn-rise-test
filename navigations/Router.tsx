@@ -1,4 +1,11 @@
-import { SafeAreaView, StyleSheet, Text, View, StatusBar } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  Platform,
+} from "react-native";
 import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import MainStackNavigator from "./MainStackNavigator";
@@ -13,11 +20,11 @@ const Router = () => {
       {/* <GestureHandlerRootView> */}
 
       <View style={styles.container}>
-        <SafeAreaView style={{ backgroundColor: "#fff" }}>
+        <SafeAreaView style={{ backgroundColor: "#fff", marginBottom: 10 }}>
           <StatusBar
             barStyle={"dark-content"}
-            translucent
-            backgroundColor={"#fff"}
+            translucent={Platform.OS === "ios" ? true : false}
+            backgroundColor={"#000"}
           />
         </SafeAreaView>
 
