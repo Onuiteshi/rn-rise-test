@@ -1,15 +1,13 @@
 import { SafeAreaView, StyleSheet, Text, View, StatusBar } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import MainStackNavigator from "./MainStackNavigator";
 import AuthStackNavigator from "./AuthStackNavigator";
 import { useSelector } from "react-redux";
-import { UserState } from "../store";
 
 const Router = () => {
-  const token = useSelector((state: UserState) => state.token);
+  const token = useSelector((state: any) => state.user.token);
 
-  console.warn(token);
   return (
     <NavigationContainer>
       {/* <GestureHandlerRootView> */}
@@ -23,7 +21,7 @@ const Router = () => {
           />
         </SafeAreaView>
 
-        {token === undefined ? <MainStackNavigator /> : <AuthStackNavigator />}
+        {token !== "" ? <MainStackNavigator /> : <AuthStackNavigator />}
       </View>
 
       {/* </GestureHandlerRootView> */}

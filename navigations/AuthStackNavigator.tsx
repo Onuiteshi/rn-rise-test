@@ -4,6 +4,7 @@ import SignUpScreen from "../screens/auth/Signup";
 import SignInScreen from "../screens/auth/Signin";
 import SetPin from "../screens/auth/SetPin";
 import Onboarding from "../components/Onboarding";
+import AuthCompletedScreen from "../screens/auth/AuthCompletedScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -14,6 +15,7 @@ const AuthStackNavigator = () => {
       <Stack.Screen name="Signup" component={SignUpScreen} />
       <Stack.Screen name="Signin" component={SignInScreen} />
       <Stack.Screen name="Pin" component={SetPin} />
+      <Stack.Screen name="Done" component={AuthCompletedScreen} />
     </Stack.Navigator>
   );
 };

@@ -19,7 +19,7 @@ import DatePicker from "react-native-datepicker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
-import { fetchUser, signup, User } from "../store";
+import { fetchSession, signup, User } from "../store";
 
 type AboutFormData = {
   first_name: string;
@@ -67,32 +67,6 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData, navigation }) => {
 
   const dispatch: any = useDispatch();
 
-  //   useEffect(() => {
-  //     // dispatch(fetchUser());
-  //     const fetchUser = async () => {
-  //       try {
-  //         const response = await fetch(
-  //           "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/sessions",
-  //           {
-  //             method: "GET",
-  //             headers: {
-  //               "Content-Type": "application/json",
-  //             },
-  //           }
-  //         );
-  //         console.log(response);
-
-  //         if (response.ok) {
-  //           const userData = await response.json();
-  //         }
-  //       } catch (error) {
-  //         console.error("Fetching user failed:", error);
-  //       }
-  //     };
-
-  //     fetchUser();
-  //   }, []);
-
   const handleFocus = (inputName: string) => {
     setFocusedInput(inputName);
   };
@@ -105,8 +79,12 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData, navigation }) => {
       password: signUpData?.password,
       date_of_birth: data.date_of_birth,
     };
+    let myData: {} = {
+      data: signupFormData,
+      navigation,
+    };
 
-    dispatch(signup(signupFormData));
+    dispatch(signup(myData));
   };
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -118,8 +96,6 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData, navigation }) => {
   };
 
   const showDatepicker = () => {
-    console.log("set");
-
     setShowDatePicker(true);
   };
 

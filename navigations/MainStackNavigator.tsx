@@ -8,7 +8,6 @@ import Plans from "../screens/plans";
 import Wallet from "../screens/wallet";
 import Account from "../screens/account";
 import Feeds from "../screens/feeds";
-import CreatePlan from "../screens/dashboard/CreatePlan";
 
 // Create a bottom tab navigator
 const Tab = createBottomTabNavigator();
@@ -23,15 +22,6 @@ const DotIndicator: React.FC<{ focused: boolean }> = ({ focused }) => {
         color={focused ? "#0898A0" : "transparent"}
       />
     </View>
-  );
-};
-
-const Dashboard = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* <Stack.Screen name="Home" component={Index} /> */}
-      <Stack.Screen name="CreatePlan" component={CreatePlan} />
-    </Stack.Navigator>
   );
 };
 

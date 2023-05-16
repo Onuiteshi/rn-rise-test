@@ -8,6 +8,7 @@ import {
   ScrollView,
   Image,
   Platform,
+  RefreshControl,
   Dimensions,
   SafeAreaView,
   StatusBar,
@@ -26,6 +27,8 @@ import {
   useNavigation,
 } from "@react-navigation/native";
 import Modals from "../../components/Modal";
+import { fetchPlans, fetchSession } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -37,18 +40,49 @@ const Index: React.FC<Props> = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [index, setIndex] = useState(1);
+  const [showText, setShowText] = useState(false);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    const fetchUserSession = async () => {
+      await dispatch(fetchSession(token));
+    };
+    const fetchUserPlans = async () => {
+      await dispatch(fetchPlans(token));
+    };
+
+    fetchUserSession();
+    fetchUserPlans();
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
+  const hiddenText = "****";
+
+  const toggleText = () => {
+    setShowText(!showText);
+  };
   const toggleModal = () => {
     setIsModalVisible(!isModalVisible);
     setIndex(1);
   };
 
   const navigations: any = useNavigation();
+  const dispatch: any = useDispatch();
+  const user = useSelector((state: any) => state.user.user);
+  const token = useSelector((state: any) => state.user.token);
+  const plans = useSelector((state: any) => state.user.plans);
+
+  //   console.warn(plans);
 
   const [slide] = useState(["1", "2", "3"]);
 
   useEffect(() => {
     const currentTime = new Date().getHours();
-    setIsMorning(currentTime >= 0 && currentTime < 12);
+    setIsMorning(currentTime >= 0 && currentTime < 17);
     if (currentTime >= 0 && currentTime < 12) {
       setGreeting("Good morning");
     } else if (currentTime >= 12 && currentTime < 18) {
@@ -56,19 +90,28 @@ const Index: React.FC<Props> = ({ navigation }) => {
     } else {
       setGreeting("Good evening");
     }
+
+    const fetchUserSession = async () => {
+      await dispatch(fetchSession(token));
+    };
+    const fetchUserPlans = async () => {
+      await dispatch(fetchPlans(token));
+    };
+
+    fetchUserSession();
+    fetchUserPlans();
   }, []);
 
   const [cards, setCards] = useState<any>([]);
 
-  const handleAddCard = () => {
-    if (cards.length < 3) {
-      const newCard = cards.length + 1;
-      setCards([...cards, newCard]);
-    }
-  };
-
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+      }
+    >
       <ImageBackground
         source={require("../../assets/image_33.png")}
         style={styles.backgroundImage}
@@ -99,7 +142,7 @@ const Index: React.FC<Props> = ({ navigation }) => {
                   color={isMorning ? "#FFD700" : "blue"}
                 />
               </Text>
-              <Text style={{ fontSize: 20 }}>Deborah</Text>
+              <Text style={{ fontSize: 20 }}>{user?.first_name}</Text>
             </View>
 
             <TouchableOpacity
@@ -160,9 +203,17 @@ const Index: React.FC<Props> = ({ navigation }) => {
             >
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>Total Balance</Text>
-                <Ionicons name="eye-outline" size={14} color="#0898A0" />
+                <Ionicons
+                  name={showText ? "eye-off" : "eye"}
+                  onPress={toggleText}
+                  size={16}
+                  color="#0898A0"
+                />
               </View>
-              <Text style={styles.cardValue}>$0.00</Text>
+              <Text style={styles.cardValue}>
+                &#x20A6;
+                {showText ? user.total_balance.toFixed(2) : hiddenText}
+              </Text>
               <View style={styles.separator} />
               <View style={styles.cardFooter}>
                 <Text style={[styles.cardFooterText, { color: "#71879C" }]}>
@@ -201,12 +252,11 @@ const Index: React.FC<Props> = ({ navigation }) => {
       <View
         style={{
           paddingBottom: 50,
-          paddingHorizontal: 16,
         }}
       >
         {/* Add Money Button */}
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { marginHorizontal: 16 }]}
           onPress={() => console.log("Add money button pressed")}
         >
           {/* Plus Icon */}
@@ -220,13 +270,13 @@ const Index: React.FC<Props> = ({ navigation }) => {
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
             <Text style={{ fontSize: 18, color: "#000", fontWeight: "500" }}>
-              {cards.length > 0 ? "Your plans" : "Create a plan"}
+              {plans.item_count > 0 ? "Your plans" : "Create a plan"}
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text
                 style={{
                   fontSize: 14,
-                  color: cards.length > 0 ? "#0898A0" : "#94A1AD",
+                  color: plans.item_count > 0 ? "#0898A0" : "#94A1AD",
                   fontWeight: "700",
                 }}
               >
@@ -239,7 +289,7 @@ const Index: React.FC<Props> = ({ navigation }) => {
               />
             </View>
           </View>
-          {cards.length > 0 ? null : (
+          {plans.item_count > 0 ? null : (
             <View>
               <Text style={{ color: "#71879C", fontSize: 15, marginTop: 12 }}>
                 Start your investment journey by creating a plan
@@ -259,129 +309,150 @@ const Index: React.FC<Props> = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
 
-              {cards.map((card: any) => (
-                <View key={card} style={styles.planCards}>
-                  <Text style={styles.planCardText}>Card {card}</Text>
-                </View>
+              {plans.items?.map((plan: any) => (
+                // <View key={plan.id} style={styles.planCards}>
+                <ImageBackground
+                  key={plan.id}
+                  style={styles.planCards}
+                  source={require("../../assets/plans.png")}
+                  resizeMode="cover"
+                  imageStyle={{ borderRadius: 12 }}
+                >
+                  <View>
+                    <Text style={styles.planCardText}>{plan.plan_name}</Text>
+                    <Text
+                      style={{ color: "#fff", fontSize: 18, marginVertical: 3 }}
+                    >
+                      &#x20A6;{plan.target_amount}
+                    </Text>
+                    <Text style={styles.planCardText}>Mixed assets</Text>
+                  </View>
+                </ImageBackground>
+                // </View>
               ))}
             </ScrollView>
           </View>
         </View>
 
-        <View
-          style={[
-            {
-              flexDirection: "row",
-              backgroundColor: "#FFFFFF",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: 20,
-              paddingHorizontal: 12,
-              paddingVertical: 10,
-              borderRadius: 12,
-            },
-            Platform.OS === "android"
-              ? { elevation: 5 }
-              : {
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowRadius: 20,
-                  shadowOpacity: 1,
-                  shadowColor: "rgba(53, 71, 89, 0.15)",
-                },
-          ]}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <View
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 12,
-                backgroundColor: "rgba(113, 135, 156, 0.1)",
+        <View style={{ paddingHorizontal: 16 }}>
+          <View
+            style={[
+              {
+                flexDirection: "row",
+                backgroundColor: "#FFFFFF",
                 alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 20,
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+                borderRadius: 12,
+              },
+              Platform.OS === "android"
+                ? { elevation: 5 }
+                : {
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowRadius: 20,
+                    shadowOpacity: 1,
+                    shadowColor: "rgba(53, 71, 89, 0.15)",
+                  },
+            ]}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  backgroundColor: "rgba(113, 135, 156, 0.1)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 10,
+                }}
+              >
+                <AntDesign name="question" size={15} color="#0898A0" />
+              </View>
+              <Text style={{ fontSize: 15, color: "#171C22" }}>Need help?</Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#0898A0",
+                borderRadius: 6,
+                width: 120,
+                height: 40,
+                paddingVertical: 10,
                 justifyContent: "center",
-                marginRight: 10,
+                alignItems: "center",
               }}
             >
-              <AntDesign name="question" size={15} color="#0898A0" />
-            </View>
-            <Text style={{ fontSize: 15, color: "#171C22" }}>Need help?</Text>
+              <Text style={{ color: "#fff", fontSize: 15 }}>Contact us</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
+
+          <View
             style={{
               backgroundColor: "#0898A0",
-              borderRadius: 6,
-              width: 120,
-              height: 40,
-              paddingVertical: 10,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "#fff", fontSize: 15 }}>Contact us</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={{
-            backgroundColor: "#0898A0",
-            borderWidth: 2,
-            borderColor: "#41BCC4",
-            borderRadius: 15,
-            padding: 16,
-          }}
-        >
-          <Text style={{ color: "#fff", fontSize: 14, fontWeight: "700" }}>
-            TODAY’S QUOTE
-          </Text>
-          <View
-            style={{
-              marginVertical: 15,
-              backgroundColor: "#fff",
-              width: 30,
-              height: 1,
-            }}
-          />
-          <View>
-            <Text style={{ color: "#fff", fontSize: 14, fontWeight: "400" }}>
-              We have no intention of rotating capital out of strong multi-year
-              investments because they’ve recently done well or because ‘growth’
-              has out performed ‘value’.
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginVertical: 15,
+              borderWidth: 2,
+              borderColor: "#41BCC4",
+              borderRadius: 15,
+              padding: 16,
             }}
           >
             <Text style={{ color: "#fff", fontSize: 14, fontWeight: "700" }}>
-              Carl Sagan
+              TODAY’S QUOTE
             </Text>
-            <TouchableOpacity
+            <View
               style={{
-                width: 42,
-                height: 42,
-                borderRadius: 42 / 2,
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                marginVertical: 15,
+                backgroundColor: "#fff",
+                width: 30,
+                height: 1,
+              }}
+            />
+            <View>
+              <Text style={{ color: "#fff", fontSize: 14, fontWeight: "400" }}>
+                We have no intention of rotating capital out of strong
+                multi-year investments because they’ve recently done well or
+                because ‘growth’ has out performed ‘value’.
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "center",
+                justifyContent: "space-between",
+                marginVertical: 15,
               }}
             >
-              <Entypo name="share" size={18} color="#fff" />
-            </TouchableOpacity>
+              <Text style={{ color: "#fff", fontSize: 14, fontWeight: "700" }}>
+                Carl Sagan
+              </Text>
+              <TouchableOpacity
+                style={{
+                  width: 42,
+                  height: 42,
+                  borderRadius: 42 / 2,
+                  backgroundColor: "rgba(255, 255, 255, 0.2)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Entypo name="share" size={18} color="#fff" />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
-        <View
-          style={{
-            alignItems: "center",
-            marginTop: 30,
-            justifyContent: "center",
-          }}
-        >
-          <Image source={require("../../assets/RISE.png")} resizeMode="cover" />
+          <View
+            style={{
+              alignItems: "center",
+              marginTop: 30,
+              justifyContent: "center",
+            }}
+          >
+            <Image
+              source={require("../../assets/RISE.png")}
+              resizeMode="cover"
+            />
+          </View>
         </View>
       </View>
       <Modals
@@ -389,6 +460,7 @@ const Index: React.FC<Props> = ({ navigation }) => {
         isModalVisible={isModalVisible}
         currentIndex={index}
         setCurrentIndex={setIndex}
+        token={token}
       />
     </ScrollView>
   );
@@ -477,6 +549,7 @@ const styles = StyleSheet.create({
   },
   plan: {
     marginVertical: 15,
+    paddingLeft: 16,
   },
   planCards: {
     width: 180,
@@ -484,13 +557,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#71879C1A",
     borderRadius: 12,
     marginHorizontal: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 16,
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
   },
   planCardText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000000",
+    fontSize: 15,
+    fontWeight: "400",
+    color: "#fff",
   },
   planAddButtons: {
     width: 180,

@@ -20,6 +20,9 @@ import DatePicker from "react-native-datepicker";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import ChartScreen from "./Chart";
+import CreatePlanDone from "../screens/dashboard/CreatePlanDone";
+import { createplan } from "../store";
+import { useDispatch } from "react-redux";
 
 type FormData = {
   name?: string;
@@ -32,6 +35,7 @@ const Modals = ({
   isModalVisible,
   currentIndex,
   setCurrentIndex,
+  token,
 }: any) => {
   const screenHeight = Dimensions.get("window").height;
   const [focusedInput, setFocusedInput] = useState("");
@@ -39,6 +43,8 @@ const Modals = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
+
+  const dispatch: any = useDispatch();
 
   const handleDateChange = (event: any, date: any) => {
     setShowDatePicker(false);
@@ -48,8 +54,6 @@ const Modals = ({
   };
 
   const showDatepicker = () => {
-    console.log("set");
-
     setShowDatePicker(true);
   };
 
@@ -60,7 +64,7 @@ const Modals = ({
     formState: { errors },
   } = useForm<FormData>();
 
-  const totalSlides = 5;
+  const totalSlides = 6;
 
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
@@ -367,11 +371,11 @@ const Modals = ({
               <Text style={styles.goalName}>Goal Name</Text>
             </View>
             <Text style={styles.question}>
-              Question {currentIndex - 1} of {totalSlides - 2}
+              Question {currentIndex - 1} of {totalSlides - 3}
             </Text>
             <View style={styles.progressContainer}>
               <ProgressBar
-                progress={(currentIndex - 1) / (totalSlides - 2)}
+                progress={(currentIndex - 1) / (totalSlides - 3)}
                 color="#0898A0"
                 style={styles.progressBar}
               />
@@ -481,11 +485,11 @@ const Modals = ({
               <Text style={styles.goalName}>Target Amount </Text>
             </View>
             <Text style={styles.question}>
-              Question {currentIndex - 1} of {totalSlides - 2}
+              Question {currentIndex - 1} of {totalSlides - 3}
             </Text>
             <View style={styles.progressContainer}>
               <ProgressBar
-                progress={(currentIndex - 1) / (totalSlides - 2)}
+                progress={(currentIndex - 1) / (totalSlides - 3)}
                 color="#0898A0"
                 style={styles.progressBar}
               />
@@ -596,11 +600,11 @@ const Modals = ({
               <Text style={styles.goalName}>Target Date</Text>
             </View>
             <Text style={styles.question}>
-              Question {currentIndex - 1} of {totalSlides - 2}
+              Question {currentIndex - 1} of {totalSlides - 3}
             </Text>
             <View style={styles.progressContainer}>
               <ProgressBar
-                progress={(currentIndex - 1) / (totalSlides - 2)}
+                progress={(currentIndex - 1) / (totalSlides - 3)}
                 color="#0898A0"
                 style={styles.progressBar}
               />
@@ -859,13 +863,23 @@ const Modals = ({
             <TouchableOpacity
               style={styles.nextButton}
               onPress={handleSubmit((data) => {
-                console.log(data);
-                handleNext;
+                let myData: {
+                  data: {};
+                  token: any;
+                  handleNext: () => void;
+                } = {
+                  data: {
+                    plan_name: data.name,
+                    target_amount: data.target,
+                    maturity_date: "2025-01-01",
+                  },
+                  token,
+                  handleNext,
+                };
+                dispatch(createplan(myData));
               })}
             >
-              <Text style={styles.nextButtonText}>
-                {currentIndex === totalSlides ? "Agree & Continue" : "Next"}
-              </Text>
+              <Text style={styles.nextButtonText}>Agree & Continue</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={{
@@ -889,6 +903,31 @@ const Modals = ({
                 Start Over
               </Text>
             </TouchableOpacity>
+          </View>
+        );
+      case 6:
+        return (
+          <View
+            style={{
+              backgroundColor: "white",
+              borderRadius: 8,
+              padding: 16,
+              paddingBottom: 100,
+
+              marginTop: StatusBar.currentHeight,
+              width: "100%",
+              height: screenHeight,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+            }}
+          >
+            <CreatePlanDone toggleModal={toggleModal} />
           </View>
         );
 

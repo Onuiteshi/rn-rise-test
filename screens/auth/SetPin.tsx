@@ -12,8 +12,13 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { NavigationProp, ParamListBase } from "@react-navigation/native";
 
-const SetPin: React.FC = () => {
+type ScreenProps = {
+  navigation: NavigationProp<ParamListBase>;
+};
+
+const SetPin: React.FC<ScreenProps> = ({ navigation }) => {
   const [pin, setPin] = useState("");
   const pinInputRefs = useRef<Array<TextInput | null>>([]);
 
@@ -30,7 +35,7 @@ const SetPin: React.FC = () => {
 
   const handleConfirm = () => {
     if (pin.length === 6) {
-      console.log(pin);
+      navigation.navigate("Signin");
     } else {
       Alert.alert("Error", "Please enter a 6-digit pin");
     }

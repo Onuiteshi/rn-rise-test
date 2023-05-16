@@ -76,8 +76,11 @@ const SignInScreen: React.FC<Props> = ({ navigation }) => {
       email_address: data?.email,
       password: data?.password,
     };
-
-    dispatch(signin(signinFormData));
+    let myData: any = {
+      data: signinFormData,
+      navigation,
+    };
+    dispatch(signin(myData));
   };
 
   const password = watch("password");
