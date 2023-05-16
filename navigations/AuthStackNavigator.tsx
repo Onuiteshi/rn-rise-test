@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Onboarding from "../components/Onboarding";
 import SignUpScreen from "../screens/auth/Signup";
 import SignInScreen from "../screens/auth/Signin";
 import SetPin from "../screens/auth/SetPin";
+import Onboarding from "../components/Onboarding";
 
 const Stack = createNativeStackNavigator();
 

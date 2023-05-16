@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { View } from "react-native";
-import SignUp from "../../components/Signup";
-import About from "../../components/About";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import About from "../../components/About";
+import SignUp from "../../components/SignUp";
 
 type SignUpFormData = {
   email: string;

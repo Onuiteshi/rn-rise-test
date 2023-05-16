@@ -7,6 +7,10 @@ import {
   StyleSheet,
   ScrollView,
   Image,
+  Platform,
+  Dimensions,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
 import {
   Ionicons,
@@ -16,11 +20,29 @@ import {
   Entypo,
 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from "@react-navigation/native";
+import Modals from "../../components/Modal";
 
-const Index: React.FC = () => {
+type Props = {
+  navigation: NavigationProp<ParamListBase>;
+};
+
+const Index: React.FC<Props> = ({ navigation }) => {
   const [greeting, setGreeting] = useState("");
   const [isMorning, setIsMorning] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [index, setIndex] = useState(1);
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+    setIndex(1);
+  };
+
+  const navigations: any = useNavigation();
 
   const [slide] = useState(["1", "2", "3"]);
 
@@ -73,8 +95,8 @@ const Index: React.FC = () => {
                 {greeting}{" "}
                 <Ionicons
                   name={isMorning ? "md-sunny" : "md-moon"}
-                  size={14}
-                  color={isMorning ? "yellow" : "blue"}
+                  size={16}
+                  color={isMorning ? "#FFD700" : "blue"}
                 />
               </Text>
               <Text style={{ fontSize: 20 }}>Deborah</Text>
@@ -128,43 +150,51 @@ const Index: React.FC = () => {
             </View>
           </View>
 
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Total Balance</Text>
-              <Ionicons name="eye-outline" size={14} color="#0898A0" />
-            </View>
-            <Text style={styles.cardValue}>$0.00</Text>
-            <View style={styles.separator} />
-            <View style={styles.cardFooter}>
-              <Text style={[styles.cardFooterText, { color: "#71879C" }]}>
-                Total Gains
-              </Text>
-              <Text
-                style={[
-                  styles.cardFooterText,
-                  { color: "#27BF41", marginLeft: 5 },
-                ]}
-              >
-                {`\u2197`}
-                0.00%
-              </Text>
-            </View>
-            <View style={styles.indicatorContainer}>
-              {slide.map((image, index) => (
-                <View
-                  key={index}
+          <View>
+            <LinearGradient
+              colors={["rgba(255, 255, 255, 0.8)", "rgba(255, 255, 255, 0)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              locations={[0, 1]}
+              style={styles.card}
+            >
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Total Balance</Text>
+                <Ionicons name="eye-outline" size={14} color="#0898A0" />
+              </View>
+              <Text style={styles.cardValue}>$0.00</Text>
+              <View style={styles.separator} />
+              <View style={styles.cardFooter}>
+                <Text style={[styles.cardFooterText, { color: "#71879C" }]}>
+                  Total Gains
+                </Text>
+                <Text
                   style={[
-                    styles.indicator,
-                    {
-                      backgroundColor:
-                        index === currentIndex ? "#0898A0" : "#71879C1A",
-                      opacity: index === currentIndex ? 1 : 0.5,
-                      width: index === currentIndex ? 12 : 5,
-                    },
+                    styles.cardFooterText,
+                    { color: "#27BF41", marginLeft: 5 },
                   ]}
-                />
-              ))}
-            </View>
+                >
+                  {`\u2197`}
+                  0.00%
+                </Text>
+              </View>
+              <View style={styles.indicatorContainer}>
+                {slide.map((image, index) => (
+                  <View
+                    key={index}
+                    style={[
+                      styles.indicator,
+                      {
+                        backgroundColor:
+                          index === currentIndex ? "#0898A0" : "#71879C1A",
+                        opacity: index === currentIndex ? 1 : 0.5,
+                        width: index === currentIndex ? 12 : 5,
+                      },
+                    ]}
+                  />
+                ))}
+              </View>
+            </LinearGradient>
           </View>
         </LinearGradient>
       </ImageBackground>
@@ -221,7 +251,7 @@ const Index: React.FC = () => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <TouchableOpacity
                 style={styles.planAddButtons}
-                onPress={handleAddCard}
+                onPress={toggleModal}
               >
                 <Ionicons name="add-circle-outline" size={48} color="#41BCC4" />
                 <Text style={styles.planAddText}>
@@ -239,20 +269,26 @@ const Index: React.FC = () => {
         </View>
 
         <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#FFFFFF",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 20,
-            paddingHorizontal: 12,
-            paddingVertical: 10,
-            borderRadius: 12,
-            shadowColor: "#000",
-            shadowOpacity: 0.15,
-            shadowRadius: 4,
-            elevation: 2,
-          }}
+          style={[
+            {
+              flexDirection: "row",
+              backgroundColor: "#FFFFFF",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 20,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
+              borderRadius: 12,
+            },
+            Platform.OS === "android"
+              ? { elevation: 5 }
+              : {
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowRadius: 20,
+                  shadowOpacity: 1,
+                  shadowColor: "rgba(53, 71, 89, 0.15)",
+                },
+          ]}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View
@@ -348,6 +384,12 @@ const Index: React.FC = () => {
           <Image source={require("../../assets/RISE.png")} resizeMode="cover" />
         </View>
       </View>
+      <Modals
+        toggleModal={toggleModal}
+        isModalVisible={isModalVisible}
+        currentIndex={index}
+        setCurrentIndex={setIndex}
+      />
     </ScrollView>
   );
 };
@@ -358,24 +400,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   backgroundImage: {
-    height: 270,
+    height: 220,
     // flex: 1,
   },
   gradient: {
-    paddingVertical: 50,
+    // paddingBottom: 50,
     paddingHorizontal: 16,
   },
 
   card: {
-    backgroundColor: "#FFFFFF",
+    // ...StyleSheet.absoluteFillObject,
     borderRadius: 10,
     padding: 16,
     // marginBottom: 16,
     alignItems: "center",
-    shadowColor: "#000000",
-    shadowOpacity: 0.1,
-    shadowRadius: 0.5,
-    elevation: 0.6,
+    borderWidth: 1,
+    borderColor: "#FFF",
   },
   cardHeader: {
     flexDirection: "row",

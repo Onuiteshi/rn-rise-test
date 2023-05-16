@@ -16,6 +16,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
+import { signin } from "../../store";
+import { useDispatch } from "react-redux";
 
 type Props = {
   navigation: NavigationProp<ParamListBase>;
@@ -50,6 +52,7 @@ const SignInScreen: React.FC<Props> = ({ navigation }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [focusedInput, setFocusedInput] = useState("");
+  const dispatch: any = useDispatch();
 
   useEffect(() => {
     const keyboardDidHideListener = Keyboard.addListener(
@@ -69,7 +72,12 @@ const SignInScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const onSubmit = (data: SignUpFormData) => {
-    console.log(data);
+    let signinFormData = {
+      email_address: data?.email,
+      password: data?.password,
+    };
+
+    dispatch(signin(signinFormData));
   };
 
   const password = watch("password");

@@ -67,31 +67,31 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData, navigation }) => {
 
   const dispatch: any = useDispatch();
 
-  useEffect(() => {
-    // dispatch(fetchUser());
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(
-          "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/sessions",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        console.log(response);
+  //   useEffect(() => {
+  //     // dispatch(fetchUser());
+  //     const fetchUser = async () => {
+  //       try {
+  //         const response = await fetch(
+  //           "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/sessions",
+  //           {
+  //             method: "GET",
+  //             headers: {
+  //               "Content-Type": "application/json",
+  //             },
+  //           }
+  //         );
+  //         console.log(response);
 
-        if (response.ok) {
-          const userData = await response.json();
-        }
-      } catch (error) {
-        console.error("Fetching user failed:", error);
-      }
-    };
+  //         if (response.ok) {
+  //           const userData = await response.json();
+  //         }
+  //       } catch (error) {
+  //         console.error("Fetching user failed:", error);
+  //       }
+  //     };
 
-    fetchUser();
-  }, []);
+  //     fetchUser();
+  //   }, []);
 
   const handleFocus = (inputName: string) => {
     setFocusedInput(inputName);
@@ -103,9 +103,8 @@ const About: React.FC<ScreenProps> = ({ prev, signUpData, navigation }) => {
       last_name: data?.last_name,
       email_address: signUpData?.email,
       password: signUpData?.password,
-      date_of_birth: new Date(data.date_of_birth),
+      date_of_birth: data.date_of_birth,
     };
-    console.log(signupFormData);
 
     dispatch(signup(signupFormData));
   };

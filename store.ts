@@ -3,12 +3,12 @@ import { configureStore, createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface User {
   first_name: string;
   last_name: string;
-  date_of_birth: Date;
+  date_of_birth: string;
   email_address: string | undefined;
   password: string | undefined;
 }
 
-interface UserState {
+export interface UserState {
   user: User | null;
   token: String;
 }
@@ -24,6 +24,9 @@ const userSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+    },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
     },
     logout: (state) => {
       state.user = null;
@@ -43,14 +46,16 @@ export const signup = (data: User) => async (dispatch: any) => {
   )
     .then((response) => response.json())
     .then((data) => {
-      if (data.status === 201) {
+      if (data.status === 200) {
         const userData = data.data;
+        console.log(data);
+
         dispatch(setUser(userData));
       }
     });
 };
 
-export const signin = (data: User) => async (dispatch: any) => {
+export const signin = (data: {}) => async (dispatch: any) => {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -65,11 +70,34 @@ export const signin = (data: User) => async (dispatch: any) => {
       console.log(data);
 
       if (data.status === 200) {
-        const userData = data.data;
-        dispatch(setUser(userData));
+        dispatch(setToken(data?.token));
+        console.warn(data?.message);
       }
     });
 };
+
+export const createplan =
+  (myData: { data: {}; token: string }) => async (dispatch: any) => {
+    const { data, token } = myData;
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      token,
+    };
+    fetch(
+      "https://rise-rn-test-api-gb2v6.ondigitalocean.app/api/v1/plans",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+
+        if (data.status === 200) {
+          console.warn(data?.message);
+        }
+      });
+  };
 
 export const fetchUser = () => async (dispatch: any) => {
   try {
@@ -93,7 +121,7 @@ export const fetchUser = () => async (dispatch: any) => {
   }
 };
 
-export const { setUser, logout } = userSlice.actions;
+export const { setUser, logout, setToken } = userSlice.actions;
 export const store = configureStore({
   reducer: {
     user: userSlice.reducer,
